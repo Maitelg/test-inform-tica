@@ -1,0 +1,37 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "¿En qué artículo de la Constitución Española se recoge el derecho a la protección de la salud?",
+      "options": {
+        "A": "En el 43",
+        "B": "En el 47",
+        "C": "En el 45",
+        "D": "En el 49"
+      },
+      "answer": "A"
+    },
+    {
+      "id": 2,
+      "question": "¿Quién puede acceder a los datos personales de una persona fallecida según la actual Ley Orgánica?",
+      "options": {
+        "A": "Personas vinculadas por razones familiares",
+        "B": "Instituciones designadas por el fallecido",
+        "C": "Padres del fallecido menor de edad",
+        "D": "Profesionales sanitarios que lo atendieron"
+      },
+      "answer": "D"
+    },
+    {
+      "id": 3,
+      "question": "Obligaciones de la ciudadanía en materia de salud pública según Ley 16/2011 de Andalucía, excepto:",
+      "options": {
+        "A": "Respetar las medidas sanitarias",
+        "B": "Uso responsable de los servicios públicos",
+        "C": "Cooperar con las autoridades sanitarias",
+        "D": "Denunciar emergencias ante la policía"
+      },
+      "answer": "D"
+    }
+  ]
+}

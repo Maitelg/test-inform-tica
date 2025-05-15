@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Técnico Medio Informática</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    .question { font-weight: bold; margin-bottom: 10px; }
+    .option { margin: 5px 0; }
+    .feedback { margin-top: 10px; font-weight: bold; }
+    .hidden { display: none; }
+    button { margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>Cuestionario Informática</h2>
+  <div id="quiz-container">
+    <div class="question" id="question"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button id="next-btn" class="hidden">Siguiente</button>
+  </div>
+  <div id="result" class="hidden"></div>
+
+  <script>
+    let questions = [];
+    let current = 0;
+    let score = 0;
+
+    fetch('questions_sample.json')
+      .then(res => res.json())
+      .then(data => {
+        questions = data.questions;
+        showQuestion();
+      });
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById('question').innerText = `${q.id}. ${q.question}`;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      document.getElementById('feedback').innerText = '';
+      document.getElementById('next-btn').classList.add('hidden');
+
+      for (let key in q.options) {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerText = `${key}) ${q.options[key]}`;
+        btn.onclick = () => checkAnswer(key);
+        optionsDiv.appendChild(btn);
+      }
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[current].answer;
+      const feedback = document.getElementById('feedback');
+      if (selected === correct) {
+        feedback.innerText = '✅ ¡Correcto!';
+        score++;
+      } else {
+        feedback.innerText = `❌ Incorrecto. La correcta era ${correct}`;
+      }
+      document.querySelectorAll('.option').forEach(btn => btn.disabled = true);
+      document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        document.getElementById('quiz-container').classList.add('hidden');
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('result').innerText = `Has acertado ${score} de ${questions.length} preguntas.`;
+      }
+    }
+  </script>
+</body>
+</html>
