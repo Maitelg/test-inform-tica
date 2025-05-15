@@ -61,7 +61,7 @@
     }
 
     function loadQuiz() {
-      fetch('questions_150.json')
+      fetch('questions_150.json?' + new Date().getTime())
         .then(res => res.json())
         .then(data => {
           questions = data.questions;
@@ -129,4 +129,3 @@
   </script>
 </body>
 </html>
-
