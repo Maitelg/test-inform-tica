@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <title>Test Técnico Medio Informática</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    body { font-family: sans-serif; padding: 20px; display: flex; }
+    #sidebar { width: 200px; margin-right: 20px; }
+    #sidebar h3 { margin-top: 0; }
+    .question-status { margin: 2px 0; padding: 5px; font-size: 0.9em; cursor: pointer; }
+    .correct { background: #d4edda; }
+    .incorrect { background: #f8d7da; }
+    .unanswered { background: #f0f0f0; }
     .question { font-weight: bold; margin-bottom: 10px; }
     .option { margin: 5px 0; }
     .feedback { margin-top: 10px; font-weight: bold; }
@@ -13,26 +19,72 @@
   </style>
 </head>
 <body>
-  <h2>Cuestionario Informática</h2>
-  <div id="quiz-container">
-    <div class="question" id="question"></div>
-    <div id="options"></div>
-    <div class="feedback" id="feedback"></div>
-    <button id="next-btn" class="hidden">Siguiente</button>
+  <div id="sidebar">
+    <h3>Progreso</h3>
+    <div id="progress"></div>
   </div>
-  <div id="result" class="hidden"></div>
+
+  <div style="flex-grow: 1;">
+    <h2>Cuestionario Informática</h2>
+
+    <div id="login">
+      <p>Introduce la contraseña para acceder:</p>
+      <input type="password" id="password" placeholder="Contraseña">
+      <button onclick="checkPassword()">Entrar</button>
+      <p id="login-error" style="color:red;"></p>
+    </div>
+
+    <div id="quiz-container" class="hidden">
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button id="next-btn">Siguiente</button>
+    </div>
+    <div id="result" class="hidden"></div>
+  </div>
 
   <script>
+    const PASSWORD = "admin123";
     let questions = [];
     let current = 0;
-    let score = 0;
+    let status = [];
 
-    fetch('questions_sample.json')
-      .then(res => res.json())
-      .then(data => {
-        questions = data.questions;
-        showQuestion();
+    function checkPassword() {
+      const input = document.getElementById("password").value;
+      if (input === PASSWORD) {
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("quiz-container").classList.remove("hidden");
+        loadQuiz();
+      } else {
+        document.getElementById("login-error").innerText = "Contraseña incorrecta";
+      }
+    }
+
+    function loadQuiz() {
+      fetch('questions_sample.json')
+        .then(res => res.json())
+        .then(data => {
+          questions = data.questions;
+          status = Array(questions.length).fill('unanswered');
+          renderProgress();
+          showQuestion();
+        });
+    }
+
+    function renderProgress() {
+      const progress = document.getElementById('progress');
+      progress.innerHTML = '';
+      status.forEach((s, i) => {
+        const btn = document.createElement('div');
+        btn.className = `question-status ${s}`;
+        btn.innerText = `Pregunta ${i + 1}`;
+        btn.onclick = () => {
+          current = i;
+          showQuestion();
+        };
+        progress.appendChild(btn);
       });
+    }
 
     function showQuestion() {
       const q = questions[current];
@@ -40,7 +92,6 @@
       const optionsDiv = document.getElementById('options');
       optionsDiv.innerHTML = '';
       document.getElementById('feedback').innerText = '';
-      document.getElementById('next-btn').classList.add('hidden');
 
       for (let key in q.options) {
         const btn = document.createElement('button');
@@ -56,12 +107,12 @@
       const feedback = document.getElementById('feedback');
       if (selected === correct) {
         feedback.innerText = '✅ ¡Correcto!';
-        score++;
+        status[current] = 'correct';
       } else {
-        feedback.innerText = `❌ Incorrecto. La correcta era ${correct}`;
+        feedback.innerText = `❌ Incorrecto. Inténtalo de nuevo.`;
+        status[current] = 'incorrect';
       }
-      document.querySelectorAll('.option').forEach(btn => btn.disabled = true);
-      document.getElementById('next-btn').classList.remove('hidden');
+      renderProgress();
     }
 
     document.getElementById('next-btn').onclick = () => {
@@ -71,9 +122,10 @@
       } else {
         document.getElementById('quiz-container').classList.add('hidden');
         document.getElementById('result').classList.remove('hidden');
-        document.getElementById('result').innerText = `Has acertado ${score} de ${questions.length} preguntas.`;
+        const correctCount = status.filter(s => s === 'correct').length;
+        document.getElementById('result').innerText = `Has acertado ${correctCount} de ${questions.length} preguntas.`;
       }
-    }
+    };
   </script>
 </body>
 </html>
